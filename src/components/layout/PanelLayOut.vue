@@ -6,13 +6,13 @@
           <div class="layout-logo"/>
           <div class="layout-title">V2RayPanel</div>
         </div>
-        <Menu class="header-menu" mode="horizontal" theme="dark" active-name="1">
+        <Menu class="header-menu" mode="horizontal" theme="dark" active-name="1" @on-select="click">
           <div class="layout-nav">
             <MenuItem name="1">
               <Dropdown>
                 <div>
                   <Icon type="md-contact"></Icon>
-                  McLeeX
+                  {{currentUserName}}
                 </div>
                 <DropdownMenu slot="list">
                   <DropdownItem>账户详情</DropdownItem>
@@ -21,7 +21,7 @@
                 </DropdownMenu>
               </Dropdown>
             </MenuItem>
-            <MenuItem name="2">
+            <MenuItem name="logout">
               <Icon type="md-log-out"></Icon>
               退出登录
             </MenuItem>
@@ -30,23 +30,29 @@
       </Header>
       <Layout :style="{padding: '0 50px'}">
         <Breadcrumb :style="{margin: '16px 0'}">
-          <BreadcrumbItem>Home</BreadcrumbItem>
-          <BreadcrumbItem>Components</BreadcrumbItem>
-          <BreadcrumbItem>Layout</BreadcrumbItem>
+          <BreadcrumbItem v-for="(item,index) in breadcrumbs" :key="index" :to="item.path">
+            {{item.title}}
+          </BreadcrumbItem>
         </Breadcrumb>
         <Content :style="{padding: '24px 0', minHeight: '280px', background: '#fff'}">
           <Layout>
             <Sider hide-trigger class="layout-sider">
-              <Menu :active-name="activeMenu" theme="light" width="auto" :open-names="openMenus">
-                <Submenu v-for="submenu in menus" :key="submenu.name" :name="submenu.name">
-                  <template slot="title">
-                    <Icon :type="submenu.icon"></Icon>
+              <Menu :active-name="activeMenu" theme="light" width="auto" accordion>
+                <div v-for="submenu in menus" :key="submenu.name">
+                  <Submenu v-if="submenu.children" :name="submenu.name">
+                    <template slot="title">
+                      <Icon v-if="submenu.icon" :type="submenu.icon"></Icon>
+                      {{submenu.title}}
+                    </template>
+                    <MenuItem v-for="children in submenu.children" :key="children.name" :name="children.name">
+                      {{children.title}}
+                    </MenuItem>
+                  </Submenu>
+                  <MenuItem v-else :name="submenu.name">
+                    <Icon v-if="submenu.icon" :type="submenu.icon"></Icon>
                     {{submenu.title}}
-                  </template>
-                  <MenuItem v-for="children in submenu.children" :key="children.name" :name="children.name">
-                    {{children.title}}
                   </MenuItem>
-                </Submenu>
+                </div>
               </Menu>
             </Sider>
             <Content class="layout-content">
@@ -55,7 +61,8 @@
           </Layout>
         </Content>
       </Layout>
-      <Footer class="layout-footer-center">V2RayPanel @<a target="_blank" href="https://github.com/McLeeX">McLeeX</a>
+      <Footer class="layout-footer-center">V2RayPanel @
+        <a target="_blank" href="https://github.com/McLeeX">McLeeX</a>
       </Footer>
     </Layout>
   </div>
@@ -63,20 +70,50 @@
 <script>
   export default {
     name: 'PanelLayOut',
-    data () {
+    data() {
       return {
-        activeMenu: 'test1',
-        openMenus: ['test'],
+        currentUserName: '',
+        currentUserId: '',
+        breadcrumbs: [],
+        activeMenu: '',
+        openMenu: '',
         menus: [{
-          name: 'test',
-          icon: 'ios-search',
-          title: '测试',
+          name: 'home',
+          icon: 'md-home',
+          title: '欢迎使用'
+        }, {
+          name: 'menu',
+          icon: 'md-home',
+          title: '欢迎使用',
           children: [{
-            name: 'test1',
-            title: '测试',
+            name: 'home1',
+            icon: 'md-home',
+            title: '欢迎使用'
           }]
         }]
       }
+    },
+    methods: {
+      click(method) {
+        let theMethod = this[method];
+        if (theMethod && typeof theMethod === "function") {
+          theMethod();
+        }
+      },
+      logout() {
+        this.$api.logout().finally(res => {
+          this.$router.replace({
+            name: "Login"
+          })
+        })
+      }
+    },
+    created() {
+      this.$api.getMyAuthentication().then(res => {
+        let user = res.data.data;
+        this.currentUserId = user.id;
+        this.currentUserName = user.name;
+      });
     }
   }
 </script>

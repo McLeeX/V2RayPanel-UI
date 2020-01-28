@@ -22,7 +22,7 @@
 <script>
   export default {
     name: 'Login',
-    data () {
+    data() {
       return {
         formInline: {
           user: '',
@@ -39,13 +39,13 @@
       }
     },
     methods: {
-      handleSubmit (name) {
+      handleSubmit(name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
-            let username = this.formInline.user
-            let password = this.formInline.password
+            let username = this.formInline.user;
+            let password = this.formInline.password;
             this.$api.login(username, password).then(res => {
-              let targetRoute
+              let targetRoute;
               if (this.$router.params && this.$router.params.redirect) {
                 targetRoute = this.$router.params.redirect
               } else {
@@ -55,7 +55,9 @@
                 path: targetRoute
               })
             }).catch(res => {
-              this.$Message.error(res.message)
+              if (res && res.data && res.data.message) {
+                this.$Message.error(res.data.message)
+              }
             })
           }
         })

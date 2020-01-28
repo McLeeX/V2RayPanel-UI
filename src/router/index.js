@@ -5,7 +5,7 @@ import Login from '../components/Login'
 import AuthLayOut from '../components/auth/AuthLayOut'
 import Signup from '../components/Signup'
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
