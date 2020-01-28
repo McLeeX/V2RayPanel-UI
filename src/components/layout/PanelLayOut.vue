@@ -37,18 +37,20 @@
         <Content :style="{padding: '24px 0', minHeight: '280px', background: '#fff'}">
           <Layout>
             <Sider hide-trigger class="layout-sider">
-              <Menu :active-name="activeMenu" theme="light" width="auto" accordion>
+              <Menu ref="left-menu" :active-name="activeMenu" theme="light" width="auto" :open-names="openMenu">
                 <div v-for="submenu in menus" :key="submenu.name">
                   <Submenu v-if="submenu.children" :name="submenu.name">
                     <template slot="title">
                       <Icon v-if="submenu.icon" :type="submenu.icon"></Icon>
                       {{submenu.title}}
                     </template>
-                    <MenuItem v-for="children in submenu.children" :key="children.name" :name="children.name">
+                    <MenuItem v-for="children in submenu.children" :key="children.name" :name="children.name"
+                              @click.native="selectMenu(children)">
+                      <Icon v-if="children.icon" :type="children.icon"></Icon>
                       {{children.title}}
                     </MenuItem>
                   </Submenu>
-                  <MenuItem v-else :name="submenu.name">
+                  <MenuItem v-else :name="submenu.name" @click.native="selectMenu(submenu)">
                     <Icon v-if="submenu.icon" :type="submenu.icon"></Icon>
                     {{submenu.title}}
                   </MenuItem>
@@ -68,6 +70,8 @@
   </div>
 </template>
 <script>
+  import {mapState} from "vuex";
+
   export default {
     name: 'PanelLayOut',
     data() {
@@ -75,20 +79,27 @@
         currentUserName: '',
         currentUserId: '',
         breadcrumbs: [],
-        activeMenu: '',
-        openMenu: '',
         menus: [{
           name: 'home',
           icon: 'md-home',
-          title: '欢迎使用'
-        }, {
-          name: 'menu',
-          icon: 'md-home',
           title: '欢迎使用',
+          to: '/welcome'
+        }, {
+          name: 'me',
+          icon: 'md-contact',
+          title: '我的账户',
           children: [{
-            name: 'home1',
-            icon: 'md-home',
-            title: '欢迎使用'
+            name: 'meDetails',
+            title: '账户详情',
+            to: '/me/details'
+          }, {
+            name: 'meChangePassword',
+            title: '修改密码',
+            to: '/me/change-password'
+          }, {
+            name: 'meChangeEmail',
+            title: '变更邮箱',
+            to: '/me/change-email'
           }]
         }]
       }
@@ -106,15 +117,56 @@
             name: "Login"
           })
         })
+      },
+      updateBreadcrumbs(route) {
+        let breadcrumbs = [];
+        let routeMatched = route ? route.matched : this.$route.matched;
+        for (let i = 0; i < routeMatched.length; i++) {
+          let route = routeMatched[i];
+          let meta = route.meta;
+          if (meta && meta.breadcrumb) {
+            breadcrumbs.push({
+              path: route.path,
+              title: meta.breadcrumb.title
+            })
+          }
+        }
+        this.breadcrumbs = breadcrumbs;
+      },
+      selectMenu(menu) {
+        if (menu.to) {
+          this.$router.push(menu.to);
+        }
+      }
+    },
+    computed: {
+      ...mapState(['activeMenu', 'openMenu'])
+    },
+    watch: {
+      openMenu(value) {
+        this.$nextTick(() => {
+          this.$refs['left-menu'].updateOpened();
+        });
       }
     },
     created() {
+      this.updateBreadcrumbs();
       this.$api.getMyAuthentication().then(res => {
         let user = res.data.data;
         this.currentUserId = user.id;
         this.currentUserName = user.name;
       });
-    }
+      this.$on("active-menu", (value) => {
+        this.activeMenu = value;
+      });
+      this.$on("open-menu", (value) => {
+        this.openMenu = value;
+      });
+    },
+    beforeRouteUpdate(to, from, next) {
+      this.updateBreadcrumbs(to);
+      next();
+    },
   }
 </script>
 <style lang="less" scoped>

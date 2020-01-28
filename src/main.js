@@ -8,6 +8,7 @@ import 'view-design/dist/styles/iview.css'
 import VueI18n from 'vue-i18n'
 import {api} from './config/api'
 import http from './config/http'
+import store from "./store/store";
 
 Vue.use(ViewUI);
 Vue.use(VueI18n);
@@ -27,6 +28,7 @@ Vue.config.productionTip = false;
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store,
   i18n,
   router,
   components: {App},

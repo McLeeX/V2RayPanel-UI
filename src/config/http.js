@@ -14,15 +14,9 @@ export default {
    * @returns {Promise<Object>} Promise<res.data>
    */
   get: (url, params) => {
-    return new Promise((resolve, reject) => {
-      axios.get(url, {
-        params: params
-      }).then(res => {
-        resolve(res)
-      }).catch(err => {
-        reject(err.response)
-      })
-    })
+    return axios.get(url, {
+      params: params
+    });
   },
   /**
    * 发送post请求
@@ -32,15 +26,7 @@ export default {
    * @returns {Promise<Object>} Promise<res>
    */
   post: (url, data, config) => {
-    return new Promise((resolve, reject) => {
-      axios.post(url, data, config)
-        .then(res => {
-          resolve(res)
-        })
-        .catch(err => {
-          reject(err.response)
-        })
-    })
+    return axios.post(url, data, config)
   },
   /**
    * 发送put请求
@@ -50,15 +36,7 @@ export default {
    * @returns {Promise<Object>} Promise<res.data>
    */
   put: (url, data, config) => {
-    return new Promise((resolve, reject) => {
-      axios.put(url, data, config)
-        .then(res => {
-          resolve(res)
-        })
-        .catch(err => {
-          reject(err.response)
-        })
-    })
+    return axios.put(url, data, config);
   },
   /**
    * 发送put请求
@@ -66,15 +44,7 @@ export default {
    * @returns {Promise<Object>} Promise<res.data>
    */
   delete: (url) => {
-    return new Promise((resolve, reject) => {
-      axios.delete(url)
-        .then(res => {
-          resolve(res)
-        })
-        .catch(err => {
-          reject(err.response)
-        })
-    })
+    return axios.delete(url);
   },
   install: (Vue, options) => {
     Vue.prototype.$http = this

@@ -46,10 +46,10 @@
             let password = this.formInline.password;
             this.$api.login(username, password).then(res => {
               let targetRoute;
-              if (this.$router.params && this.$router.params.redirect) {
-                targetRoute = this.$router.params.redirect
+              if (this.$route.query && this.$route.query.redirect) {
+                targetRoute = this.$route.query.redirect
               } else {
-                targetRoute = '/home'
+                targetRoute = '/welcome'
               }
               this.$router.replace({
                 path: targetRoute
