@@ -15,9 +15,9 @@
                   {{currentUserName}}
                 </div>
                 <DropdownMenu slot="list">
-                  <DropdownItem>账户详情</DropdownItem>
-                  <DropdownItem>修改密码</DropdownItem>
-                  <DropdownItem>变更邮箱</DropdownItem>
+                  <DropdownItem @click.native="$router.push('/me/details')">账户详情</DropdownItem>
+                  <DropdownItem @click.native="$router.push('/me/change-password')">修改密码</DropdownItem>
+                  <DropdownItem @click.native="$router.push('/me/change-email')">变更邮箱</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </MenuItem>
@@ -28,7 +28,7 @@
           </div>
         </Menu>
       </Header>
-      <Layout :style="{padding: '0 50px'}">
+      <Layout :style="{padding: '0 50px','min-width': '800px'}">
         <Breadcrumb :style="{margin: '16px 0'}">
           <BreadcrumbItem v-for="(item,index) in breadcrumbs" :key="index" :to="item.path">
             {{item.title}}
@@ -126,7 +126,7 @@
           let meta = route.meta;
           if (meta && meta.breadcrumb) {
             breadcrumbs.push({
-              path: route.path,
+              path: i === routeMatched.length - 1 ? null : route.path,
               title: meta.breadcrumb.title
             })
           }
